@@ -4,15 +4,13 @@ Twitter の画像・動画をダウンロードする CLI ツール。
 
 [![NPM Version](https://img.shields.io/npm/v/@neos21/twsv.svg)](https://www.npmjs.com/package/@neos21/twsv)
 
-ツイートするだけの CLI ツール。
-
 
 ## Installation
 
 ```sh
 $ npm install -g @neos21/twsv
 
-# Set credentials
+# クレデンシャル情報を設定する
 export TWITTER_CONSUMER_KEY='Your Consumer Key'
 export TWITTER_CONSUMER_SECRET='Your Consumer Secret'
 export TWITTER_ACCESS_TOKEN_KEY='Your Access Token Key'
