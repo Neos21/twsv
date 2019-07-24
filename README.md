@@ -31,7 +31,18 @@ $ twsv https://twitter.com/USERNAME/likes
 $ twsv https://twitter.com/USERNAME/status/0000000000000000000
 ```
 
-コマンドを実行した時のカレントディレクトリに `twsv-downloads/` ディレクトリを作り、その下にファイルを保存する。
+デフォルトの保存先は、コマンドを実行した時のカレントディレクトリに `twsv-downloads/` ディレクトリを作り、その下にファイルを保存する。
+
+保存先ディレクトリを変更する場合は、環境変数か第2引数で指定できる (両方指定されている場合は第2引数が優先)。
+
+```sh
+# 環境変数で指定して実行
+$ export TWSV_SAVE_DIRECTORY='/home/downloads'
+$ twsv https://twitter.com/USERNAME/status/0000000000000000000
+
+# 第2引数で指定して実行
+$ twsv https://twitter.com/USERNAME/status/0000000000000000000 '/home/downloads'
+```
 
 
 ## Author

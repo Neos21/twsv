@@ -43,27 +43,11 @@ Object.keys(credentials).forEach((keyName) => {
 // Twitter Client
 const client = new twitter(credentials);
 
-// URL : 第1引数で指定する
-const url = process.argv[2];
-
-if(!url) {
-  console.error('引数で Twitter URL を指定してください');
-  return process.exit(1);
-}
-else if(!isTwitterUrl(url)) {
-  console.error('指定された URL が不正です', url);
-  return process.exit(1);
-}
-
-// 保存先ディレクトリパス : 呼び出し元のカレントディレクトリ配下にディレクトリを作成し保存する
-const saveDirectoryPath = `${process.cwd()}/twsv-downloads`;
-
 (async () => {
-  // Twitter API コール前に保存ディレクトリが作れるか確認する
-  if(!canMakeSaveDirectory(saveDirectoryPath)) {
-    console.error('保存先にファイルが存在するためディレクトリが作成できない', saveDirectoryPath);
-    return process.exit(1);
-  }
+  // URL : 第1引数で指定する
+  const url = detectUrl();
+  // 保存先ディレクトリ : 第2引数・環境変数・デフォルトパスを特定する
+  const { saveDirectoryPath, isDefaultSaveDirectory } = detectSaveDirectory();
   
   // 入力された URL の種類別に画像・動画 URL を取得する
   let mediaUrls = [];
@@ -123,18 +107,20 @@ const saveDirectoryPath = `${process.cwd()}/twsv-downloads`;
     return process.exit(1);
   }
   
-  // 保存先ディレクトリがなければ作成する
-  try {
-    createSaveDirectory(saveDirectoryPath);
-  }
-  catch(error) {
-    console.error('保存先ディレクトリの作成に失敗', error);
-    return process.exit(1);
+  // デフォルトパスの場合、保存先ディレクトリがなければ作成する
+  if(isDefaultSaveDirectory) {
+    try {
+      createSaveDirectory(saveDirectoryPath);
+    }
+    catch(error) {
+      console.error('保存先ディレクトリの作成に失敗', error);
+      return process.exit(1);
+    }
   }
   
   // ダウンロード処理
   await Promise.all(mediaUrls.map((mediaUrl) => {
-    return downloadFile(mediaUrl);
+    return downloadFile(mediaUrl, saveDirectoryPath);
   }));
   
   console.log('完了');
@@ -145,19 +131,85 @@ const saveDirectoryPath = `${process.cwd()}/twsv-downloads`;
 
 
 /**
+ * URL 文字列を取得する
+ * 
+ * @return {string} URL
+ * @throws 引数がない・URL 不正の場合はプロセスを終了する
+ */
+function detectUrl() {
+  const url = process.argv[2];
+  if(!url) {
+    console.error('引数で Twitter URL を指定してください');
+    return process.exit(1);
+  }
+  else if(!isTwitterUrl(url)) {
+    console.error('指定された URL が不正です', url);
+    return process.exit(1);
+  }
+  return url;
+}
+
+
+/**
+ * 保存先ディレクトリを特定する
+ * 
+ * @return {*} 保存先ディレクトリパスと、そのパスがデフォルト値かどうかを返す
+ */
+function detectSaveDirectory() {
+  // 保存先ディレクトリパス : 呼び出し元のカレントディレクトリ配下にディレクトリを作成し保存する
+  let saveDirectoryPath = path.join(process.cwd(), 'twsv-downloads');
+  // 上のデフォルトのディレクトリパスに保存するかどうか
+  let isDefaultSaveDirectory = true;
+  
+  // 環境変数があればそのディレクトリパスに保存する
+  if(process.env['TWSV_SAVE_DIRECTORY']) {
+    saveDirectoryPath = process.env['TWSV_SAVE_DIRECTORY'];
+    isDefaultSaveDirectory = false;
+  }
+  
+  // 第2引数があればそのディレクトリパスに保存する
+  if(process.argv[3]) {
+    saveDirectoryPath = process.argv[3];
+    isDefaultSaveDirectory = false;
+  }
+  
+  // 特定したディレクトリパスを検証する
+  if(isDefaultSaveDirectory) {
+    if(!canMakeSaveDirectory(saveDirectoryPath)) {
+      // デフォルトパスの場合、ディレクトリが作成できそうか確認する (既にディレクトリが存在している分には問題なし)
+      console.error('保存先にファイルが存在するためディレクトリが作成できない', saveDirectoryPath);
+      return process.exit(1);
+    }
+  }
+  else if(!existsDirectory(saveDirectoryPath)) {
+    // パスが指定されている場合、ディレクトリが既に存在しているか確認する
+    console.error('保存先ディレクトリが存在しない', saveDirectoryPath);
+    return process.exit(1);
+  }
+  
+  return { saveDirectoryPath, isDefaultSaveDirectory };
+}
+
+
+
+/**
  * 保存先ディレクトリが作成できるか確認する
  * 
  * @param {string} saveDirectoryPath 保存先ディレクトリパス
- * @return ディレクトリが既に存在する場合、何も存在しておらず作成できる場合は true・ファイルが存在している場合は作成できないので false
+ * @return 何も存在していないか、ディレクトリが既に存在する場合は true・ファイルが存在している場合は作成できないので false
  */
 function canMakeSaveDirectory(saveDirectoryPath) {
-  // ディレクトリ・ファイルが存在していない場合は true
-  if(!fs.existsSync(saveDirectoryPath)) {
-    return true;
-  }
-  
-  // ディレクトリが存在していれば true・ファイルが存在している場合は作成できないので false
-  return fs.statSync(saveDirectoryPath).isDirectory();
+  return !fs.existsSync(saveDirectoryPath) || fs.statSync(saveDirectoryPath).isDirectory();
+}
+
+/**
+ * 保存先ディレクトリが存在するか確認する
+ * 
+ * @param {string} saveDirectoryPath 保存先ディレクトリパス
+ * @return ディレクトリが存在すれば true・存在しなければ false
+ */
+function existsDirectory(saveDirectoryPath) {
+  return fs.existsSync(saveDirectoryPath) && fs.statSync(saveDirectoryPath).isDirectory();
 }
 
 /**
@@ -292,8 +344,8 @@ function fetchTimelineTweets(userName) {
 function collectMediaUrls(tweet) {
   // extended_entities.media[] プロパティがない場合は処理対象なし
   if(!tweet.extended_entities || !tweet.extended_entities.media || !tweet.extended_entities.media.length) {
-    const userName = tweet.user ? tweet.user.screen_name : 'UNKNOWN';
-    const tweetId = tweet.id_str || 'UNKNOWN';
+    const userName = tweet.user ? tweet.user.screen_name : 'UNKNOWN-USER';
+    const tweetId = tweet.id_str || 'UNKNOWN-ID';
     console.log('ツイートに画像・動画が付与されていない', `https://twitter.com/${userName}/status/${tweetId}`);
     return [];
   }
@@ -373,10 +425,12 @@ const socketsAgent = new SocketsAgent(5);
  * ファイル取得・保存に失敗した場合はログ出力のみで終了する
  * 
  * @param {string} mediaUrl 画像・動画の URL
+ * @param {string} saveDirectoryPath 保存先ディレクトリパス
  * @return {Promise<null>} ダウンロード完了
  */
-function downloadFile(mediaUrl) {
-  console.log('ダウンロード開始', mediaUrl);
+function downloadFile(mediaUrl, saveDirectoryPath) {
+  const savePath = path.join(saveDirectoryPath, path.basename(mediaUrl));
+  console.log('ダウンロード開始', mediaUrl, savePath);
   return requestPromise.get({
     url: mediaUrl,
     encoding: null,
@@ -388,15 +442,13 @@ function downloadFile(mediaUrl) {
     pool: socketsAgent.get(mediaUrl)
   })
     .then((binary) => {
-      console.log('ダウンロード成功', mediaUrl);
-      const fileName = path.basename(mediaUrl);
-      return fsWriteFile(`${saveDirectoryPath}/${fileName}`, binary, 'binary');
+      console.log('ダウンロード成功', mediaUrl, savePath);
+      return fsWriteFile(savePath, binary, 'binary');
     })
     .then(() => {
-      console.log('ファイル保存成功', mediaUrl);
+      console.log('ファイル保存成功', mediaUrl, savePath);
     })
-    .catch((error) => {
-      console.error('ダウンロード失敗', mediaUrl);
-      // console.error(error);
+    .catch((_error) => {
+      console.error('ダウンロード失敗', mediaUrl, savePath);
     });
 }

@@ -1,6 +1,6 @@
 {
   "name": "@neos21/twsv",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Twitter の画像・動画をダウンロードする CLI ツール",
   "main": "main.js",
   "bin": {
