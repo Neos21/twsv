@@ -51,7 +51,7 @@ if(!url) {
   return process.exit(1);
 }
 else if(!isTwitterUrl(url)) {
-  console.error('指定された URL が不正です');
+  console.error('指定された URL が不正です', url);
   return process.exit(1);
 }
 
@@ -115,6 +115,12 @@ const saveDirectoryPath = `${process.cwd()}/twsv-downloads`;
       const tweetMediaUrls = collectMediaUrls(tweet);
       return accumulatorMediaUrls.concat(tweetMediaUrls);
     }, []);
+  }
+  
+  // ダウンロードできるメディアがない場合は中止する
+  if(!mediaUrls.length) {
+    console.error('画像・動画の URL が見つからなかった');
+    return process.exit(1);
   }
   
   // 保存先ディレクトリがなければ作成する
@@ -390,6 +396,7 @@ function downloadFile(mediaUrl) {
       console.log('ファイル保存成功', mediaUrl);
     })
     .catch((error) => {
-      console.error('ダウンロード失敗', mediaUrl, error);
+      console.error('ダウンロード失敗', mediaUrl);
+      // console.error(error);
     });
 }
