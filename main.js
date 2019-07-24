@@ -298,7 +298,6 @@ function collectMediaUrls(tweet) {
       // 動画 : 最高画質の動画 URL を選んで格納する
       let currentBitrate = -1;
       let currentMediaUrl = '';
-      console.log(JSON.stringify(media.video_info.variants, null, '  '));
       media.video_info.variants.forEach((variant) => {
         if(variant.content_type !== 'video/mp4') {
           return;  // m3u8 などを除外する
@@ -371,7 +370,7 @@ const socketsAgent = new SocketsAgent(5);
  * @return {Promise<null>} ダウンロード完了
  */
 function downloadFile(mediaUrl) {
-  console.log(mediaUrl);
+  console.log('ダウンロード開始', mediaUrl);
   return requestPromise.get({
     url: mediaUrl,
     encoding: null,
@@ -386,6 +385,9 @@ function downloadFile(mediaUrl) {
       console.log('ダウンロード成功', mediaUrl);
       const fileName = path.basename(mediaUrl);
       return fsWriteFile(`${saveDirectoryPath}/${fileName}`, binary, 'binary');
+    })
+    .then(() => {
+      console.log('ファイル保存成功', mediaUrl);
     })
     .catch((error) => {
       console.error('ダウンロード失敗', mediaUrl, error);
