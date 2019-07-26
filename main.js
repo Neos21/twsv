@@ -187,6 +187,7 @@ function detectSaveDirectory() {
     return process.exit(1);
   }
   
+  console.log('保存先ディレクトリ', saveDirectoryPath)
   return { saveDirectoryPath, isDefaultSaveDirectory };
 }
 
@@ -221,7 +222,7 @@ function existsDirectory(saveDirectoryPath) {
  */
 function createSaveDirectory(saveDirectoryPath) {
   if(!fs.existsSync(saveDirectoryPath)) {
-    console.log(`${saveDirectoryPath} ディレクトリ未作成`);
+    console.log(`${saveDirectoryPath} ディレクトリがないので作成する`);
     fs.mkdirSync(saveDirectoryPath);
   }
 }
@@ -298,7 +299,23 @@ function detectUserName(url) {
  */
 function fetchTweet(tweetId) {
   return client.get('statuses/show', {
-    id: tweetId
+    id: tweetId,
+    include_blocked_by: true,
+    include_blocking: true,
+    include_can_dm: true,
+    include_cards: true,
+    include_entities: true,
+    include_ext_alt_text: true,
+    include_ext_media_color: true,
+    include_followed_by: true,
+    include_profile_interstitial_type: true,
+    include_reply_count: true,
+    include_mute_edge: true,
+    include_want_retweets: true,
+    cards_platform: 'Web-12',
+    skip_status: true,
+    trim_user: false,
+    tweet_mode: 'extended'
   });
 }
 
@@ -430,7 +447,6 @@ const socketsAgent = new SocketsAgent(5);
  */
 function downloadFile(mediaUrl, saveDirectoryPath) {
   const savePath = path.join(saveDirectoryPath, path.basename(mediaUrl));
-  console.log('ダウンロード開始', mediaUrl, savePath);
   return requestPromise.get({
     url: mediaUrl,
     encoding: null,
@@ -442,11 +458,10 @@ function downloadFile(mediaUrl, saveDirectoryPath) {
     pool: socketsAgent.get(mediaUrl)
   })
     .then((binary) => {
-      console.log('ダウンロード成功', mediaUrl, savePath);
       return fsWriteFile(savePath, binary, 'binary');
     })
     .then(() => {
-      console.log('ファイル保存成功', mediaUrl, savePath);
+      console.log('ダウンロード成功', mediaUrl, savePath);
     })
     .catch((_error) => {
       console.error('ダウンロード失敗', mediaUrl, savePath);
