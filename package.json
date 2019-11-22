@@ -1,6 +1,6 @@
 {
   "name": "@neos21/twsv",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Twitter の画像・動画をダウンロードする CLI ツール",
   "main": "main.js",
   "bin": {
@@ -9,16 +9,20 @@
   "scripts": {
     "start": "node main.js"
   },
+  "author": "Neo <neos21@gmail.com> (http://neo.s21.xrea.com/)",
+  "license": "MIT",
+  "homepage": "https://github.com/Neos21/twsv#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Neos21/twsv.git"
   },
-  "author": "Neo <neos21@gmail.com> (http://neo.s21.xrea.com/)",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Neos21/twsv/issues"
   },
-  "homepage": "https://github.com/Neos21/twsv#readme",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/Neos21"
+  },
   "dependencies": {
     "request": "2.88.0",
     "request-promise": "4.2.4",
