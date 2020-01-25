@@ -47,7 +47,7 @@ $ twsv https://twitter.com/USERNAME/status/0000000000000000000 '/home/downloads'
 
 ## Author
 
-[Neo](http://neo.s21.xrea.com/) ([@Neos21](https://twitter.com/Neos21))
+[Neo](http://neo.s21.xrea.com/)
 
 - [GitHub - twsv](https://github.com/Neos21/twsv)
 - [npm - @neos21/twsv](https://www.npmjs.com/package/@neos21/twsv)
