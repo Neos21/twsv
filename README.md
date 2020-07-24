@@ -2,7 +2,7 @@
 
 Twitter の画像・動画をダウンロードする CLI ツール。
 
-[![NPM Version](https://img.shields.io/npm/v/@neos21/twsv.svg)](https://www.npmjs.com/package/@neos21/twsv)
+[![NPM Version](https://img.shields.io/npm/v/@neos21/twsv.svg)](https://www.npmjs.com/package/@neos21/twsv) [![GPR Version](https://img.shields.io/github/package-json/v/neos21/twsv?label=github)](https://github.com/Neos21/twsv/packages/328039)
 
 
 ## Installation

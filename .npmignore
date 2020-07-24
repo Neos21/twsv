@@ -7,3 +7,6 @@ act/
 node_modules/
 
 twsv-downloads/
+
+# for .npmignore
+.github/workflows/
