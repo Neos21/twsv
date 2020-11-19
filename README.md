@@ -1,4 +1,4 @@
-# twsv : @neos21/twsv
+# @neos21/twsv : twsv
 
 Twitter の画像・動画をダウンロードする CLI ツール。
 
@@ -45,19 +45,9 @@ $ twsv https://twitter.com/USERNAME/status/0000000000000000000 '/home/downloads'
 ```
 
 
-## Author
-
-[Neo](http://neo.s21.xrea.com/)
-
-- [GitHub - twsv](https://github.com/Neos21/twsv)
-- [npm - @neos21/twsv](https://www.npmjs.com/package/@neos21/twsv)
-
-
 ## Links
 
-- [Neo's World](http://neo.s21.xrea.com/)
-- [Corredor](https://neos21.hatenablog.com/)
-- [Murga](https://neos21.hatenablog.jp/)
-- [El Mylar](https://neos21.hateblo.jp/)
-- [Neo's GitHub Pages](https://neos21.github.io/)
+- [Neo's World](https://neos21.net/)
 - [GitHub - Neos21](https://github.com/Neos21/)
+- [GitHub - twsv](https://github.com/Neos21/twsv)
+- [npm - @neos21/twsv](https://www.npmjs.com/package/@neos21/twsv)
